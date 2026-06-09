@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Pose-based Time Synchronization for Low-Cost Multi-View Motion Capture
 
 ## Overview
