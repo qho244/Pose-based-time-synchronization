@@ -1,0 +1,29 @@
+project:
+  name: Pose-based Time Synchronization
+  version: 1.0
+
+dataset:
+  session: session_02
+  fps: 30
+
+motion_signal:
+  type: selected_joint
+
+  selected_joints:
+    - 15
+    - 16
+    - 27
+    - 28
+
+synchronization:
+  max_lag: 60
+
+reconstruction:
+  method: triangulation
+
+evaluation:
+  metric_3d: bone_length_variance
+
+output:
+  save_figures: true
+  save_metrics: true
