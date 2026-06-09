@@ -126,7 +126,6 @@ Example actions:
 - Clap
 - Hand wave
 - Walk in place
-- Sit-stand
 - Jump
 
 Dataset structure:
