@@ -1,3 +1,5 @@
+import sys
+
 from src.pose_extraction.extract_pose import extract_pose_from_video
 from src.motion_signal.compute_signal import save_motion_signal
 from src.synchronization.estimate_offset import estimate_offset_from_files
@@ -9,7 +11,7 @@ from src.visualization.compare_before_after import compare_before_after
 
 
 def main():
-    session = "session_02"
+    session = sys.argv[1] if len(sys.argv) > 1 else "session_02"
 
     cam1_video = f"data/raw/{session}/cam1.mp4"
     cam2_video = f"data/raw/{session}/cam2.mp4"

@@ -13,7 +13,7 @@ def plot_signals(signal1_path: str, signal2_path: str, output_path: str):
     plt.figure(figsize=(12, 5))
     plt.plot(signal1, label="Camera 1")
     plt.plot(signal2, label="Camera 2")
-    plt.title("Motion Signal Comparison")
+    plt.title(f"Motion Signals")
     plt.xlabel("Frame")
     plt.ylabel("Normalized Motion")
     plt.legend()

@@ -14,6 +14,7 @@ The project focuses on:
 - Frame alignment
 - 3D pose reconstruction through triangulation
 - Quantitative evaluation of synchronization quality
+- Experimental analysis
 
 ---
 
@@ -37,7 +38,7 @@ This project aims to investigate whether more stable motion signals extracted fr
 
 ---
 
-## Pipeline
+## Pipeline Structure
 
 ```text
 Video (Camera 1)
@@ -140,6 +141,148 @@ session_01/
 session_02/
 ├── cam1.mp4
 └── cam2.mp4
+
+session_03/
+├── cam1.mp4
+└── cam2.mp4
+```
+
+---
+## Pipeline
+
+The synchronization pipeline performs the following steps:
+
+### Step 1 — 2D Pose Extraction
+
+MediaPipe Pose is used to extract 33 body keypoints from each frame.
+
+Output:
+
+```text
+data/processed/keypoints/
+```
+
+---
+
+### Step 2 — Motion Signal Generation
+
+Three motion signal types are supported:
+
+* velocity
+* energy
+* selected_joint
+
+Signals are optionally smoothed and normalized.
+
+Output:
+
+```text
+data/processed/signals/
+```
+
+---
+
+### Step 3 — Temporal Offset Estimation
+
+Cross-correlation is applied to estimate frame offsets between camera streams.
+
+Output:
+
+```text
+data/processed/aligned/*_offset.npy
+```
+
+---
+
+### Step 4 — Frame Alignment
+
+The estimated offset is used to synchronize the two keypoint sequences.
+
+Output:
+
+```text
+data/processed/aligned/
+```
+
+---
+
+### Step 5 — 3D Pose Reconstruction
+
+Aligned 2D keypoints are reconstructed into 3D poses using triangulation.
+
+Output:
+
+```text
+data/processed/pose3d/
+```
+
+---
+
+### Step 6 — Visualization
+
+Generated visualizations include:
+
+* Motion signals
+* Before/after synchronization comparison
+* 3D pose visualization
+
+Output:
+
+```text
+results/figures/
+```
+
+---
+
+## Evaluation Metrics
+
+### Synchronization
+
+* Estimated Offset
+* Correlation Score
+
+### 3D Reconstruction
+
+* Bone Length Variance
+* Temporal Smoothness Error
+
+---
+
+## Experiments
+
+### Experiment 1 — Delta Offset Analysis
+
+Artificial temporal offsets are introduced around the estimated offset.
+
+Purpose:
+
+* Analyze synchronization sensitivity
+* Observe effects on 3D reconstruction quality
+
+Output:
+
+```text
+results/tables/*_delta_offset.json
+```
+
+---
+
+### Experiment 2 — Motion Signal Comparison
+
+Comparison between:
+
+* Velocity Signal
+* Energy Signal
+* Selected Joint Signal
+
+Metric:
+
+* Correlation Score
+
+Output:
+
+```text
+results/tables/*_signal_comparison.json
 ```
 
 ---
@@ -152,7 +295,7 @@ Create virtual environment:
 python -m venv .venv
 ```
 
-Activate environment:
+Activate:
 
 ```bash
 .venv\Scripts\activate
@@ -166,73 +309,73 @@ pip install -r requirements.txt
 
 ---
 
-## Run Pipeline
+## Usage
 
-Execute the complete pipeline:
+### Run Pipeline Only
+
+Execute a single session pipeline:
 
 ```bash
-python -m src.main
+python -m src.main session_01
 ```
 
-Pipeline steps:
+or
+
+```bash
+python -m src.main session_02
+```
+
+or
+
+```bash
+python -m src.main session_03
+```
+
+This runs:
 
 1. Pose Extraction
 2. Motion Signal Generation
-3. Time Offset Estimation
+3. Offset Estimation
 4. Frame Alignment
-5. 3D Reconstruction
+5. Triangulation
 6. Visualization
-7. Evaluation
 
 ---
 
-## Evaluation Metrics
+### Run Full Project
 
-### Synchronization Metrics
-
-- Estimated Offset (frames)
-- Estimated Offset (milliseconds)
-- Correlation Score
-
-Example:
-
-```json
-{
-  "estimated_offset_frames": 57,
-  "estimated_offset_ms": 1900,
-  "correlation_score": 0.3846
-}
-```
-
-### 3D Reconstruction Metrics
-
-- Bone Length Variance
-
-Example:
-
-```json
-{
-  "bone_length_variance": 1.7586
-}
-```
-
----
-
-## Test
-
-Run all tests:
+Execute all sessions and experiments:
 
 ```bash
-pytest tests/
+python -m src.run_all
 ```
 
-Current tests:
-- test_eval.py
-- test_sync_eval.py
-- collect_results.py
-- test_motion_signal.py
-- test_sync.py
-- test_triangulation.py
+This runs:
+
+* All pipeline stages
+* Experiment 1
+* Experiment 2
+* Result aggregation
+
+Outputs are automatically saved into:
+
+```text
+results/figures/
+results/tables/
+```
+
+---
+
+## Dependencies
+
+```text
+numpy==1.26.4
+opencv-python==4.10.0.84
+mediapipe==0.10.14
+matplotlib==3.9.2
+pytest==9.0.3
+PyYAML==6.0.2
+```
 
 ---
 
@@ -265,6 +408,15 @@ session_02_summary.json
 ---
 
 ## Team
+### Institution
+
+Vietnam National University, Ho Chi Minh City
+Ho Chi Minh City University of Technology (HCMUT)
+Faculty of Computer Science and Engineering
+
+### Course
+
+**Multidisciplinary Project**
 
 Project Topic:
 
@@ -276,13 +428,3 @@ Contributors:
 - Trịnh Lương Nhất Quân 2353017
 - Phạm Anh Quân 2353011
 - Bùi Thanh Tuyền
-
----
-
-## Future Work
-
-- Camera calibration using checkerboard
-- Improved motion signal design
-- Robust synchronization under occlusion
-- Evaluation on larger datasets
-- Multi-camera (>2 views) synchronization

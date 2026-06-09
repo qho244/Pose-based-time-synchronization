@@ -55,3 +55,15 @@ def bone_length_variance(pose3d):
         return np.nan
 
     return float(np.mean(variances))
+
+def temporal_smoothness_error(pose3d):
+    velocity = np.diff(pose3d, axis=0)
+    acceleration = np.diff(velocity, axis=0)
+
+    acceleration_norm = np.linalg.norm(acceleration, axis=2)
+    acceleration_norm = acceleration_norm[~np.isnan(acceleration_norm)]
+
+    if len(acceleration_norm) == 0:
+        return np.nan
+
+    return float(np.mean(acceleration_norm))
